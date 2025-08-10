@@ -22,7 +22,12 @@ MINGW_CXXFLAGS = -std=c++17 -O2 -static-libgcc -static-libstdc++ -luser32
 # Commands, not files
 .PHONY: all clean
 
-all: $(OUT_LINUX) $(OUT_MAC) $(OUT_WIN)
+all: mkdir $(OUT_LINUX) $(OUT_MAC) $(OUT_WIN)
+	@echo "Build complete!"
+
+mkdir:
+	@echo "Making compiles directory if needed..."
+	@[ -d compiles ] || mkdir compiles
 
 # Image -> Byte array compile
 $(DATA_HEADER): $(IMG)
