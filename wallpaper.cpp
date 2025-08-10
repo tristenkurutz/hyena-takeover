@@ -79,7 +79,7 @@ int main() {
 #elif defined(__linux__)
     string cmd;
     int ret = 1;
-    if(commandExistsLinux("gsettings")){
+    if(commandExistsLinux("gnome-shell")){
         cmd = "gsettings set org.gnome.desktop.background picture-uri 'file://" + imagePath + "'";
         // system needs char ptr
         ret = system(cmd.c_str());
