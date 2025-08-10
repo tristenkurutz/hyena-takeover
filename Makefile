@@ -20,7 +20,7 @@ MINGW_CXX = x86_64-w64-mingw32-g++
 MINGW_CXXFLAGS = -std=c++17 -O2 -static-libgcc -static-libstdc++ -luser32
 
 # Commands, not files
-.PHONY: all clean
+.PHONY: all clean mkdir
 
 all: mkdir $(OUT_LINUX) $(OUT_MAC) $(OUT_WIN)
 	@echo "Build complete!"
