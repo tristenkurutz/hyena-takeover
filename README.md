@@ -13,4 +13,4 @@ or, if you want to change the image:
 </ol>
 
 ## There's a catch...
-The Linux version uses <code>gnome</code> commands to set the wallpaper, which won’t work on all Linux distributions or desktop environments. So, Linux friends may have limited support. :(
+The Linux version uses <code>gnome</code> or <code>swww</code> commands to set the wallpaper, which won’t work on all Linux distributions or desktop environments. So, Linux friends may have limited support. :(
