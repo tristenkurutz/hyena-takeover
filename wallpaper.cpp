@@ -8,20 +8,22 @@
 
 #include "wallpaper_data.h"
 
-std::string writeImageToTempFile(const std::string& filename) {
-    std::string tempPath;
+using namespace std;
+
+string writeImageToTempFile(const string& filename) {
+    string tempPath;
 
 #if defined(_WIN32) || defined(_WIN64)
     char buffer[MAX_PATH];
     GetTempPathA(MAX_PATH, buffer);
-    tempPath = std::string(buffer) + filename;
+    tempPath = string(buffer) + filename;
 #else
     tempPath = "/tmp/" + filename;
 #endif
 
-    std::ofstream outFile(tempPath, std::ios::binary);
+    ofstream outFile(tempPath, ios::binary);
     if (!outFile) {
-        std::cerr << "Failed to open temp file for writing\n";
+        cerr << "Failed to open temp file for writing\n";
         return "";
     }
 
@@ -32,9 +34,17 @@ std::string writeImageToTempFile(const std::string& filename) {
     return tempPath;
 }
 
+bool commandExistsLinux(const string& cmd) {
+    string checkCmd = "command -v " + cmd + " > /dev/null 2>&1";
+    
+    // system needs char ptr
+    int ret = system(checkCmd.c_str());
+    return ret == 0;
+}
+
 int main() {
     // Write embedded image to temp file
-    std::string imagePath = writeImageToTempFile("wallpaper.jpg");
+    string imagePath = writeImageToTempFile("wallpaper.jpg");
     if (imagePath.empty()) {
         return 1;
     }
@@ -48,37 +58,53 @@ int main() {
     );
 
     if (result) {
-        std::cout << "Wallpaper changed successfully!\n";
+        cout << "Wallpaper changed successfully!\n";
         return 0;
     } else {
-        std::cerr << "Failed to change wallpaper.\n";
+        cerr << "Failed to change wallpaper.\n";
         return 1;
     }
 
 #elif defined(__APPLE__)
-    std::string cmd = "osascript -e 'tell application \"System Events\" to set picture of every desktop to \"" + imagePath + "\"'";
+    string cmd = "osascript -e 'tell application \"System Events\" to set picture of every desktop to \"" + imagePath + "\"'";
     int ret = system(cmd.c_str());
     if (ret == 0) {
-        std::cout << "macOS wallpaper changed successfully!\n";
+        cout << "macOS wallpaper changed successfully!\n";
         return 0;
     } else {
-        std::cerr << "Failed to change macOS wallpaper.\n";
+        cerr << "Failed to change macOS wallpaper.\n";
         return 1;
     }
 
 #elif defined(__linux__)
-    std::string cmd = "gsettings set org.gnome.desktop.background picture-uri 'file://" + imagePath + "'";
-    int ret = system(cmd.c_str());
-    if (ret == 0) {
-        std::cout << "Linux wallpaper changed successfully!\n";
-        return 0;
-    } else {
-        std::cerr << "Failed to change Linux wallpaper.\n";
+    string cmd;
+    int ret = 1;
+    if(commandExistsLinux("gsettings")){
+        cmd = "gsettings set org.gnome.desktop.background picture-uri 'file://" + imagePath + "'";
+        // system needs char ptr
+        ret = system(cmd.c_str());
+    }
+    else if(commandExistsLinux("swww")){
+        cmd = "swww img " + imagePath;
+        // system needs char ptr
+        ret = system(cmd.c_str());
+    }
+    else {
+        cerr << "No supported wallpaper command found.\n";
         return 1;
     }
 
+     if (ret == 0) {
+        cout << "Linux wallpaper changed successfully!\n";
+        return 0;
+    } else {
+        cerr << "Failed to change Linux wallpaper.\n";
+        return 1;
+    }
+    
+
 #else
-    std::cerr << "Unsupported OS.\n";
+    cerr << "Unsupported OS.\n";
     return 1;
 #endif
 }
